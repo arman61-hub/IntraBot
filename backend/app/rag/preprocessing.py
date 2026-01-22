@@ -7,20 +7,20 @@ from langchain_core.documents import Document
 
 from backend.app.rag.rbac import roles_for_department
 
-
 MAX_TOKENS = 256
 OVERLAP = 40
 
 
 def _clean(text: str) -> str:
-    text = re.sub(r"\s+", " ", text)
-    return text.strip()
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _read_file(path: Path) -> str:
     if path.suffix == ".csv":
         return pd.read_csv(path).to_string(index=False)
-    return path.read_text(encoding="utf-8", errors="ignore")
+    if path.suffix in {".md", ".txt"}:
+        return path.read_text(encoding="utf-8", errors="ignore")
+    return ""
 
 
 def preprocess(directories: List[Path]) -> Dict:
@@ -32,7 +32,7 @@ def preprocess(directories: List[Path]) -> Dict:
         for file in directory.rglob("*"):
             if file.suffix not in {".md", ".txt", ".csv"}:
                 continue
-
+            
             model.tokenizer.model_max_length = int(1e12)
             raw = _clean(_read_file(file))
             tokens = model.tokenizer.encode(raw, add_special_tokens=False)
@@ -68,3 +68,5 @@ def preprocess(directories: List[Path]) -> Dict:
         "total_documents": len(documents),
         "total_chunks": total_chunks,
     }
+
+
