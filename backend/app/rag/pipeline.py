@@ -4,11 +4,12 @@ from backend.app.rag.vector_store import build_vector_store
 
 
 def run_pipeline(role: str):
-    dirs = get_allowed_dirs(role)
-    result = preprocess(dirs)
+    directories = get_allowed_dirs(role)
+    result = preprocess(directories)
     store = build_vector_store(result["documents"])
 
     return {
         "vector_store": store,
-        **result,
+        "total_documents": result["total_documents"],
+        "total_chunks": result["total_chunks"],
     }

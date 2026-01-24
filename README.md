@@ -1,19 +1,20 @@
 # Company-Internal-Chatbot-with-Role-Based-Access-Control-RBAC---Group-1
 
 A secure **Company Internal Chatbot** built using **Retrieval-Augmented Generation (RAG)** and **strict Role-Based Access Control (RBAC)**.  
-The system ensures that users can **only retrieve information authorized for their role**, eliminating cross-department data leakage.
+The system ensures that users can **only retrieve information authorized for their role**, eliminating cross-department data leakage while still allowing access to company-wide documents.
 
 ---
 
 ## 🚀 Project Overview
 
-This project implements a **role-aware RAG pipeline** for internal company documents.
+This project implements a **role-aware RAG pipeline** for internal company documents, strictly following the project specification provided in the PDF.
 
 ### Key Guarantees
 - 🔒 Users can access **only role-permitted documents**
 - 🛡️ No cross-department or privilege-escalation leakage
 - 📊 Secure, auditable, and scalable retrieval
 - 🧠 Vector-based semantic search with enforced RBAC filtering
+- 📄 Company-wide (general) documents accessible to all employees
 
 ---
 
@@ -23,8 +24,19 @@ This project implements a **role-aware RAG pipeline** for internal company docum
 - **Marketing**
 - **HR**
 - **Engineering**
-- **Employees** (general access)
-- **C-Level** (full access across all departments)
+- **Employees** (general access only)
+- **C-Level** (access to all departments)
+
+## 🔐 Access Rules
+
+| Role        | Accessible Folders                                  |
+|--------------|-----------------------------------------------------|
+| Finance      | `finance + general`                               |
+| Marketing    | `marketing + general`                             |
+| HR           | `hr + general`                                    |
+| Engineering  | `engineering + general`                           |
+| Employees    | `general`                                          |
+| C-Level      | `finance + marketing + hr + engineering + general` |
 
 ---
 
@@ -42,7 +54,6 @@ data/
     └── general/
 
 ```
-
 ---
 
 ## 📄 Supported File Formats
@@ -73,7 +84,7 @@ All supported formats are parsed and normalized before being ingested into the v
 - Role-based metadata injection per chunk
 
 #### 🧠 Vector Store
-- SentenceTransformer-based embeddings
+- SentenceTransformer-based embeddings (```all-MiniLM-L6-v2```)
 - Persistent **ChromaDB** storage
 - Metadata preserved for every embedded chunk
 
@@ -133,17 +144,21 @@ Role-Based Access Control (RBAC) is enforced at the **retrieval layer**, ensurin
 
 ---
 
-## 📌 Milestone 1 – Current Progress
-
-### ✅ Completed Features
+## 📌 Milestone 1 :  Environment Setup & Document Preprocessing
+### ✅ Implemented
+- Project environment setup
 - Role → department access mapping
 - Document parsing (`.md`, `.csv`, `.txt`)
 - Text cleaning and normalization
 - Token-safe chunking
-- Role-based metadata injection
-- SentenceTransformer embeddings
+
+## 📌 Milestone 2 :  Vector Database & Secure Retrieval
+### ✅ Implemented
+- SentenceTransformer embeddings (MiniLM)
 - Persistent ChromaDB vector store
-- Secure RBAC-aware retrieval
+- High-recall semantic retrieval
+- RBAC-safe post-retrieval filtering
+- Duplicate chunk suppression
 - End-to-end progress demo
 
 ---
@@ -178,7 +193,7 @@ Query     : employee salary
 - **Results returned**: 0
 - **RBAC validation**: **PASS**
 
-✔️ ✔️ Unauthorized access was correctly blocked with zero results.
+✔️ Unauthorized access was correctly blocked with zero results.
 ---
 
 ## 🧪 How to Run Progress Demo
@@ -195,10 +210,10 @@ Chatbot/
 ├── backend/
 │   ├── app/
 │   │   ├── rag/
-│   │   │   ├── rbac.py              # Role → folder access logic
+│   │   │   ├── rbac.py              # Role → document access rules
 │   │   │   ├── preprocessing.py     # Parse, clean, chunk, metadata
 │   │   │   ├── vector_store.py      # Embeddings + ChromaDB
-│   │   │   ├── retriever.py         # Secure RBAC retrieval
+│   │   │   ├── retriever.py         # Secure RBAC-aware retrieval
 │   │   │   ├── pipeline.py          # End-to-end orchestration
 │   │   │   └── __init__.py
 │   │   │

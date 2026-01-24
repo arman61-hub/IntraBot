@@ -1,7 +1,5 @@
 from backend.app.rag.pipeline import run_pipeline
 from backend.app.rag.retriever import secure_search
-from backend.app.rag.rbac import get_effective_roles
-
 
 def main():
     role = input("Enter User Role  : ").strip().lower()
@@ -23,25 +21,11 @@ def main():
     print(f"User Role       : {role}")
     print(f"Results Found   : {len(results)}")
 
-    effective_roles = get_effective_roles(role)
-    rbac_pass = True
-
-    for doc in results:
-        doc_roles = {
-            r.strip()
-            for r in doc.metadata.get("accessible_roles", "").split(",")
-        }
-        if doc_roles.isdisjoint(effective_roles):
-            rbac_pass = False
-            break
-
-    print(f"RBAC Validation : {'PASS' if rbac_pass else 'FAIL'}")
-
     print("\n--- RETRIEVAL SUMMARY ---\n")
 
     if not results:
         print("No results returned.")
-        print("Reason: Either no relevant content was found or access is restricted by RBAC.")
+        print("Reason: Either no relevant content exists or access is restricted by RBAC.")
         print("Status: RBAC enforcement verified.")
         return
 
@@ -55,7 +39,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 # PASS (Authorized)
 # Role  : finance

@@ -68,5 +68,3 @@ def preprocess(directories: List[Path]) -> Dict:
         "total_documents": len(documents),
         "total_chunks": total_chunks,
     }
-
-

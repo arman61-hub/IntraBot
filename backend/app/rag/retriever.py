@@ -1,10 +1,9 @@
+import re
 import hashlib
 from typing import List
-import re
 
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-from backend.app.rag.rbac import get_effective_roles
 
 
 def normalize_query(query: str) -> str:
@@ -16,8 +15,7 @@ def normalize_query(query: str) -> str:
 
 def _role_allowed(accessible_roles: str, user_role: str) -> bool:
     doc_roles = {r.strip() for r in accessible_roles.split(",")}
-    user_roles = get_effective_roles(user_role)
-    return not doc_roles.isdisjoint(user_roles)
+    return user_role in doc_roles
 
 
 def _content_hash(text: str) -> str:
@@ -35,7 +33,7 @@ def secure_search(
 
     results = vector_store.similarity_search(
         normalized_query,
-        k=k * 5,   # high recall
+        k=k * 5,
     )
 
     seen = set()
@@ -45,9 +43,12 @@ def secure_search(
         if not _role_allowed(doc.metadata.get("accessible_roles", ""), role):
             continue
 
+        if len(doc.page_content.split()) < 40:
+            continue
+
         dedup_key = (
             doc.metadata.get("source_path"),
-            _content_hash(doc.page_content[:300])
+            _content_hash(doc.page_content[:300]),
         )
 
         if dedup_key in seen:
