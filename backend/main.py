@@ -9,13 +9,18 @@ app = FastAPI(
 
 @app.on_event("startup")
 def startup_event():
-    print("🔄 Building vector store (one-time)...")
+    print("\n🔄 Building vector store (one-time)...")
+
     stats = run_pipeline_once()
-    print(
-        f"✅ Vector store ready | "
-        f"Docs: {stats['total_documents']} | "
-        f"Chunks: {stats['total_chunks']}"
-    )
+
+    print("\n📊 DOCUMENT INGESTION SUMMARY")
+    print("────────────────────────────────")
+
+    for dept, count in sorted(stats["chunks_per_department"].items()):
+        print(f"📁 {dept:<12} → {count} chunks")
+
+    print("────────────────────────────────")
+    print(f"✅ TOTAL DOCUMENT CHUNKS : {stats['total_chunks']}\n")
 
 app.include_router(auth_routes.router)
 app.include_router(chat_routes.router)

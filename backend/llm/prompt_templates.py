@@ -3,26 +3,28 @@ from langchain_core.documents import Document
 
 def build_prompt(query: str, documents: List[Document]) -> str:
     context = "\n\n".join(
-        f"[Source {i}]\n{doc.page_content}"
-        for i, doc in enumerate(documents, 1)
-    )
-    
-    SYSTEM_PROMPT = (
-        "You are an internal company Q&A assistant. \n"
-        "Instructions: \n"
-        "- Answer using ONLY the information in the context. \n"
-        "- Extract factual points relevant to the question. \n"
-        "- Do NOT add new information. \n"
-        "- Present the answer clearly in 3–5 bullet points. \n"
-        "- If the answer is not present, reply exactly: I don't know. \n"
-        "Context: {context} \n"
-        "Question: {query} \n"
-        "Answer: \n" 
+        f"[Source: {doc.metadata.get('source_path', 'Unknown')}]\n{doc.page_content.strip()}"
+        for doc in documents
     )
 
-    return (
-        f"{SYSTEM_PROMPT}\n\n"
-        f"Context:\n{context}\n\n"
-        f"User Query:\n{query}\n\n"
-        f"Answer:"
+    SYSTEM_PROMPT = (
+        "You are an internal company assistant.\n"
+        "Use the provided context to answer the user's question.\n"
+        "If partial information is available, summarize what is present.\n"
+        "Be concise. Provide a summary if the answer is long.\n"
+        "Do NOT refuse to answer if the information is incomplete.\n"
+        "Do NOT add external knowledge.\n"
+        "Answer in clear bullet points.\n"
     )
+
+    return f"""
+            {SYSTEM_PROMPT}
+
+            ### Context Data:
+            {context}
+
+            ### User Question:
+            {query}
+
+            ### Answer:
+            """

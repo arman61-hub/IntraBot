@@ -1,18 +1,6 @@
-import re
 from typing import List, Tuple
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-
-
-def normalize(text: str) -> set:
-    return set(re.findall(r"[a-zA-Z]{3,}", text.lower()))
-
-
-def is_context_relevant(query: str, doc: Document) -> bool:
-    query_tokens = normalize(query)
-    content_tokens = normalize(doc.page_content)
-    return len(query_tokens & content_tokens) >= 2
-
 
 def role_allowed(doc: Document, user_role: str) -> bool:
     roles = {
@@ -35,9 +23,6 @@ def secure_search_with_scores(
 
     for doc, score in results:
         if not role_allowed(doc, role):
-            continue
-
-        if not is_context_relevant(query, doc):
             continue
 
         safe_results.append((doc, score))

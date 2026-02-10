@@ -12,7 +12,8 @@ class RAGPipeline:
     def __init__(self):
         self.llm = LLMClient()
 
-    def run(self, user_role: str, query: str, k: int = 5):
+    # INCREASED k TO 15 TO FEED MORE DATA TO THE LLM
+    def run(self, user_role: str, query: str, k: int = 15):
         vector_store = get_vector_store()  # ✅ lazy access
 
         results = secure_search_with_scores(
