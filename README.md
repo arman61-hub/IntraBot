@@ -527,12 +527,12 @@ The system includes preconfigured demo users:
 
 | Username  | Password | Role        |
 |-----------|----------|-------------|
+| admin     | admin123 | C-Level     |
 | carol     | carol123 | HR          |
 | alice     | alice123 | Finance     |
+| eve       | eve123   | Employees   |
 | bob       | bob123   | Marketing   |
 | dave      | dave123  | Engineering |
-| eve       | eve123   | Employees   |
-| admin     | admin123 | C-Level     |
 
 User accounts can be created or deleted using the interactive database initialization utility:
 
