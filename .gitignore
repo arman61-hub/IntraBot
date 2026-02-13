@@ -12,10 +12,6 @@ __pycache__/
 .env
 **/.env
 
-# Vector database (auto-generated)
-backend/vector_db/
-backend/vector_db/**
-
 backend/db/users.db
 backend/auth/access_audit.log
 
